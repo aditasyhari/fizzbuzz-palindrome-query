@@ -1,0 +1,64 @@
+Download dahulu 
+a. DATABASE classicmodels di website https://www.mysqltutorial.org/mysql-sample-database.aspx
+b. kemudian di link https://www.dropbox.com/scl/fi/5m2s2as1ruykppxd136o2/table_kurs_pajak.sql?rlkey=k2sw5lfksl84mhvzsrdox811q&dl=0
+
+kemudian jawablah soal dibawah ini
+
+1.Buat QUERY untuk menampilkan customerNumber siapa saja yang memesan productLine Classic Cars dimana total hitung atau COUNT productionline tersebut lebih besar dari 23
+
+2.Buat stored procedure pada mysql untuk mengekstrak isi dari ksm_kurs_pajak menjadi 1 table kurs pajak dimana table ini akan terdiri dari kolom sebagai berikut dan contoh isinya seperti ini
+"id_ksm_kurs_pajak"	"kurs_rate"	"tgl"	"curr_id"
+"1"	"12102.0000"	"2014-01-22"	"8"
+"1"	"12102.0000"	"2014-01-23"	"8"
+"1"	"12102.0000"	"2014-01-24"	"8"
+"1"	"12102.0000"	"2014-01-25"	"8"
+"1"	"12102.0000"	"2014-01-26"	"8"
+"1"	"12102.0000"	"2014-01-27"	"8"
+"1"	"12102.0000"	"2014-01-28"	"8"
+"2"	"12168.0000"	"2014-01-29"	"8"
+"2"	"12168.0000"	"2014-01-30"	"8"
+"2"	"12168.0000"	"2014-01-31"	"8"
+"2"	"12168.0000"	"2014-02-01"	"8"
+"2"	"12168.0000"	"2014-02-02"	"8"
+"2"	"12168.0000"	"2014-02-03"	"8"
+"2"	"12168.0000"	"2014-02-04"	"8"
+"3"	"12203.0000"	"2014-02-05"	"8"
+"3"	"12203.0000"	"2014-02-06"	"8"
+"3"	"12203.0000"	"2014-02-07"	"8"
+"3"	"12203.0000"	"2014-02-08"	"8"
+"3"	"12203.0000"	"2014-02-09"	"8"
+"3"	"12203.0000"	"2014-02-10"	"8"
+"3"	"12203.0000"	"2014-02-11"	"8"
+dst
+dst
+dst
+"92"	"13816.0000"	"2015-12-09"	"8"
+"92"	"13816.0000"	"2015-12-10"	"8"
+"92"	"13816.0000"	"2015-12-11"	"8"
+"92"	"13816.0000"	"2015-12-12"	"8"
+"92"	"13816.0000"	"2015-12-13"	"8"
+"92"	"13816.0000"	"2015-12-14"	"8"
+"92"	"13816.0000"	"2015-12-15"	"8"
+"93"	"13984.0000"	"2015-12-16"	"8"
+"93"	"13984.0000"	"2015-12-17"	"8"
+"93"	"13984.0000"	"2015-12-18"	"8"
+"93"	"13984.0000"	"2015-12-19"	"8"
+"93"	"13984.0000"	"2015-12-20"	"8"
+"93"	"13984.0000"	"2015-12-21"	"8"
+"93"	"13984.0000"	"2015-12-22"	"8"
+"94"	"13961.0000"	"2015-12-23"	"8"
+"94"	"13961.0000"	"2015-12-24"	"8"
+"94"	"13961.0000"	"2015-12-25"	"8"
+"94"	"13961.0000"	"2015-12-26"	"8"
+"94"	"13961.0000"	"2015-12-27"	"8"
+"94"	"13961.0000"	"2015-12-28"	"8"
+"94"	"13961.0000"	"2015-12-29"	"8"
+
+store procedure ini haruslah mempunyai start transaction dan juga error handling rollback keseluruhan transaksi 
+seperti apabila table kurs pajak sudah ada isinya maka stored procedure akan di roll back dari start transaction
+(perhatikan petunjuk awal di no 2 harap dibaca kembali jangan langsung loncat ke baris ini)
+
+3. Buatlah function pada mysql untuk mencari tanggal terkecil dari string yang ter-concatenated seperti berikut 
+'2016-04-22, 2016-07-20, 2015-03-29, 2023-07-03'
+apabila fungsi tersebut dipanggil maka output yang dihasilkan adalah 2015-03-29
+ 

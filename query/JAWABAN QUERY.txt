@@ -1,0 +1,90 @@
+1. SELECT
+        o.customerNumber,
+        COUNT(od.productCode) as total_ordered
+    FROM
+        orders o
+    JOIN
+        orderdetails od ON o.orderNumber = od.orderNumber
+    JOIN
+        products p ON od.productCode = p.productCode
+    JOIN
+        productlines pl ON p.productLine = pl.productLine
+    WHERE
+        pl.productLine = 'Classic Cars'
+    GROUP BY
+        o.customerNumber
+    HAVING
+        total_ordered > 23;
+
+
+
+2. DELIMITER //
+
+    CREATE PROCEDURE generate_kurs_pajak()
+    BEGIN
+        DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
+        BEGIN
+            ROLLBACK;
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error occurred, rolling back transaction.';
+        END;
+
+        START TRANSACTION;
+        -- Cek apakah tabel 'kurs_pajak' sudah memiliki data
+        IF (SELECT COUNT(*) FROM kurs_pajak) > 0 THEN
+            ROLLBACK;
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Tabel kurs_pajak sudah memiliki data, transaksi dibatalkan.';
+        ELSE
+            -- Loop untuk mengekstrak data dari 'ksm_kurs_pajak' ke 'kurs_pajak'
+            INSERT INTO kurs_pajak (id_ksm_kurs_pajak, kurs_rate, tgl, curr_id)
+            SELECT id, kurs_rate, start_date, curr_id
+            FROM ksm_kurs_pajak
+            JOIN (
+                SELECT TO_DATE('2014-01-22') + INTERVAL (a.a + (10 * b.a) + (100 * c.a)) DAY AS tgl
+                FROM (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS a
+                CROSS JOIN (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS b
+                CROSS JOIN (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS c
+                HAVING tgl BETWEEN (SELECT MIN(start_date) FROM ksm_kurs_pajak) AND (SELECT MAX(end_date) FROM ksm_kurs_pajak)
+            ) AS dates
+            ON dates.tgl BETWEEN ksm_kurs_pajak.start_date AND ksm_kurs_pajak.end_date;
+            
+            COMMIT;
+        END IF;
+    END //
+
+    DELIMITER ;
+
+
+
+3. DELIMITER //
+
+    CREATE FUNCTION find_min_date(input_str VARCHAR(4000)) RETURNS DATE
+    BEGIN
+        DECLARE min_date DATE;
+        DECLARE date_str VARCHAR(10);
+        DECLARE done INT DEFAULT 0;
+        DECLARE cur_date CURSOR FOR 
+            SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(input_str, ', ', @n), ', ', -1) as date_str
+            FROM information_schema.tables
+            WHERE @n := @n + 1
+            HAVING @n <= LENGTH(input_str) - LENGTH(REPLACE(input_str, ', ', ''));
+
+        SET @n = 0;
+        SET min_date = NULL;
+
+        OPEN cur_date;
+        read_loop: LOOP
+            FETCH cur_date INTO date_str;
+            IF done THEN
+                LEAVE read_loop;
+            END IF;
+
+            IF STR_TO_DATE(date_str, '%Y-%m-%d') < min_date OR min_date IS NULL THEN
+                SET min_date = STR_TO_DATE(date_str, '%Y-%m-%d');
+            END IF;
+        END LOOP;
+        CLOSE cur_date;
+
+        RETURN min_date;
+    END //
+
+    DELIMITER ;
